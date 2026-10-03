@@ -21,6 +21,12 @@ python3 app.py --db airline_recovery.db
 - `POST /api/plans/{id}/validate`、`/lock`：校验并原子锁定方案。
 - `GET /api/disruptions/{id}/compare`：比较恢复方案成本。
 - `POST /api/flights/{id}/cancel`、`/recover`：取消和人工恢复。
+- `POST /api/deferrals`：申请延期放行（同一飞机同时只能有一份有效延期，并发申请只有一方能办成）。
+- `POST /api/deferrals/{id}/resolve`：结束延期（过期/撤销），依赖它的未执行航段立即退回 `pending_reschedule`，已落地航段保留回执。
+- `POST /api/flights/{id}/land`：登记落地并保留回执。
+- `POST /api/flights/{id}/reschedule`：重排待重排航段，重新核对维护间隔、执勤和宵禁；写入冲突时按飞机编号重试，不重复占用飞机与机组。
+- `POST /api/aircraft/{id}/reschedule-pending`：按飞机编号批量重排待重排航段，逐条重试并返回成功/失败。
+- `GET /api/deferrals/{id}`、`GET /api/aircraft/{id}/deferrals`：查询延期放行。
 - `GET /api/state`、`GET /api/plans/{id}`：查询状态和影响。
 
 ## 测试
