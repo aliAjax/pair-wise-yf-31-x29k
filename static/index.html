@@ -1,3 +1,25 @@
 <!doctype html><html lang="zh-CN"><meta charset="utf-8"><title>航班恢复控制台</title>
-<style>body{font:15px system-ui;max-width:1100px;margin:40px auto;background:#eef2f7;color:#182230;padding:0 20px}section{background:white;padding:20px;border-radius:12px;margin:16px 0;box-shadow:0 2px 10px #0001}pre{background:#111827;color:#93c5fd;padding:15px;overflow:auto;border-radius:8px}input,button{font:inherit;padding:8px;margin:4px}button{background:#0f766e;color:white;border:0;border-radius:6px}</style>
-<h1>航班恢复控制台</h1><p>查看航班、中断事件与恢复方案。写操作使用 JSON API 并携带 X-User-Id、X-Role。</p><section><input id="u" value="ops"><input id="r" value="ops_manager"><button onclick="load()">刷新</button><pre id="o"></pre></section><script>async function load(){let x=await fetch('/api/state',{headers:{'X-User-Id':u.value,'X-Role':r.value}});o.textContent=JSON.stringify(await x.json(),null,2)}load()</script>
+<style>body{font:15px system-ui;max-width:1100px;margin:40px auto;background:#eef2f7;color:#182230;padding:0 20px}section{background:white;padding:20px;border-radius:12px;margin:16px 0;box-shadow:0 2px 10px #0001}pre{background:#111827;color:#93c5fd;padding:15px;overflow:auto;border-radius:8px}input,button{font:inherit;padding:8px;margin:4px}button{background:#0f766e;color:white;border:0;border-radius:6px}.tag{display:inline-block;background:#ccfbf1;color:#115e59;border-radius:6px;padding:2px 8px;margin:2px;font-size:13px}</style>
+<h1>航班恢复控制台</h1>
+<p>查看航班、中断事件、机务延期、落地回执、待重排队列与恢复方案。写操作使用 JSON API 并携带 X-User-Id、X-Role。</p>
+<section>
+  <div><span class="tag">延期状态一变 → 未执行航段退回待重排</span><span class="tag">已落地航段保留回执</span><span class="tag">重排重新核对维护/执勤/宵禁</span></div>
+  <input id="u" value="ops"><input id="r" value="ops_manager"><button onclick="load()">刷新</button>
+  <pre id="o">加载中…</pre>
+</section>
+<script>
+async function load(){
+  let x=await fetch('/api/state',{headers:{'X-User-Id':u.value,'X-Role':r.value}});
+  let s=await x.json();
+  o.textContent=JSON.stringify({
+    server_time:s.server_time,
+    deferrals:s.deferrals,
+    reschedule_queue:s.reschedule_queue,
+    receipts:s.receipts,
+    flights:s.flights,
+    disruptions:s.disruptions,
+    plans:s.plans
+  },null,2);
+}
+load();setInterval(load,10000);
+</script>
